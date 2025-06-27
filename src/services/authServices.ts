@@ -1,14 +1,14 @@
 import { axiosInstance, baseUrl } from "@/lib/utils";
 
 interface SignUpBody {
-  name: string;
-  email: string;
-  password: string;
+  name?: string;
+  email?: string;
+  password?: string;
 }
 
 interface LoginBody {
-  email: string;
-  password: string;
+  email?: string;
+  password?: string;
 }
 
 interface LoginResponse {
