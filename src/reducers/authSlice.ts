@@ -1,5 +1,9 @@
 import { fetchLoggedInUser } from "@/services/authServices";
-import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import {
+  createAsyncThunk,
+  createSlice,
+  type PayloadAction,
+} from "@reduxjs/toolkit";
 
 interface AuthState {
   loading: boolean;
@@ -12,8 +16,7 @@ const initialState: AuthState = {
 };
 
 export const checkAuth = createAsyncThunk("auth/checkAuth", async () => {
-  const response = await fetchLoggedInUser();
-  return response.data;
+  await fetchLoggedInUser();
 });
 
 const authSlice = createSlice({
@@ -23,6 +26,10 @@ const authSlice = createSlice({
     logout: (state) => {
       state.authenticated = false;
       state.loading = false;
+    },
+    updateAuth: (state, action: PayloadAction<AuthState>) => {
+      state.loading = action.payload.loading;
+      state.authenticated = action.payload.authenticated;
     },
   },
 
@@ -42,5 +49,5 @@ const authSlice = createSlice({
   },
 });
 
-export const { logout } = authSlice.actions;
+export const { logout, updateAuth } = authSlice.actions;
 export default authSlice.reducer;

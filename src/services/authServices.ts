@@ -88,7 +88,7 @@ export const fetchLoggedInUser = async () => {
     };
   } catch (err) {
     console.error(err);
-    return {
+    throw {
       status: false,
       data: err.response.data.message,
     };

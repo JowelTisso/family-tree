@@ -9,6 +9,8 @@ import { z } from "zod";
 import { useForm, type SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
+import { useAppDispatch } from "@/store/hook";
+import { updateAuth } from "@/reducers/authSlice";
 
 const formSchema = z.object({
   email: z.string().email("Email is required"),
@@ -22,6 +24,7 @@ export function LoginForm({
   ...props
 }: React.ComponentProps<"div">) {
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
 
   const navigateToSignup = () => {
     navigate("/signup");
@@ -32,6 +35,12 @@ export function LoginForm({
     if (response.status) {
       toast.success("Login successfull");
       saveToLocalStorage("user", JSON.stringify(response.data.user));
+      dispatch(
+        updateAuth({
+          loading: false,
+          authenticated: true,
+        })
+      );
       navigate("/");
     } else {
       toast.error(response.data as unknown as string);
