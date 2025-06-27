@@ -1,4 +1,4 @@
-import { axiosInstance } from "@/lib/utils";
+import { axiosInstance, baseUrl } from "@/lib/utils";
 
 interface SignUpBody {
   name: string;
@@ -93,4 +93,8 @@ export const fetchLoggedInUser = async () => {
       data: err.response.data.message,
     };
   }
+};
+
+export const loginWithGoogle = () => {
+  window.location.href = `${baseUrl}/auth/google`;
 };

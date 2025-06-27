@@ -8,15 +8,18 @@ import {
 interface AuthState {
   loading: boolean;
   authenticated: boolean;
+  user: Record<string, string>;
 }
 
 const initialState: AuthState = {
   loading: true,
   authenticated: false,
+  user: {},
 };
 
 export const checkAuth = createAsyncThunk("auth/checkAuth", async () => {
-  await fetchLoggedInUser();
+  const response = await fetchLoggedInUser();
+  return response;
 });
 
 const authSlice = createSlice({
@@ -30,6 +33,7 @@ const authSlice = createSlice({
     updateAuth: (state, action: PayloadAction<AuthState>) => {
       state.loading = action.payload.loading;
       state.authenticated = action.payload.authenticated;
+      state.user = action.payload.user;
     },
   },
 
@@ -38,9 +42,10 @@ const authSlice = createSlice({
       .addCase(checkAuth.pending, (state) => {
         state.loading = true;
       })
-      .addCase(checkAuth.fulfilled, (state) => {
+      .addCase(checkAuth.fulfilled, (state, action) => {
         state.loading = false;
         state.authenticated = true;
+        state.user = action.payload.data;
       })
       .addCase(checkAuth.rejected, (state) => {
         state.loading = false;

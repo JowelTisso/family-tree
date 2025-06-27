@@ -1,10 +1,10 @@
-import { cn, saveToLocalStorage } from "@/lib/utils";
+import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useNavigate } from "react-router-dom";
-import { loginHandler } from "@/services/authServices";
+import { loginHandler, loginWithGoogle } from "@/services/authServices";
 import { z } from "zod";
 import { useForm, type SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -26,27 +26,6 @@ export function LoginForm({
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
 
-  const navigateToSignup = () => {
-    navigate("/signup");
-  };
-
-  const onSubmit: SubmitHandler<FormData> = async (data) => {
-    const response = await loginHandler(data);
-    if (response.status) {
-      toast.success("Login successfull");
-      saveToLocalStorage("user", JSON.stringify(response.data.user));
-      dispatch(
-        updateAuth({
-          loading: false,
-          authenticated: true,
-        })
-      );
-      navigate("/");
-    } else {
-      toast.error(response.data as unknown as string);
-    }
-  };
-
   const {
     register,
     handleSubmit,
@@ -59,6 +38,27 @@ export function LoginForm({
     resolver: zodResolver(formSchema),
   });
 
+  const navigateToSignup = () => {
+    navigate("/signup");
+  };
+
+  const onSubmit: SubmitHandler<FormData> = async (data) => {
+    const response = await loginHandler(data);
+    if (response.status) {
+      toast.success("Login successfull");
+      dispatch(
+        updateAuth({
+          loading: false,
+          authenticated: true,
+          user: response.data.user,
+        })
+      );
+      navigate("/");
+    } else {
+      toast.error(response.data as unknown as string);
+    }
+  };
+
   return (
     <div
       className={cn("flex flex-col gap-6 justify-center", className)}
@@ -69,8 +69,10 @@ export function LoginForm({
           <form className="p-6 md:p-8" onSubmit={handleSubmit(onSubmit)}>
             <div className="flex flex-col gap-6">
               <div className="flex flex-col items-center text-center">
-                <h1 className="text-2xl font-bold">Welcome back</h1>
-                <p className="text-muted-foreground text-balance">
+                <h1 className="text-2xl font-bold text-start w-full">
+                  Welcome back
+                </h1>
+                <p className="text-muted-foreground text-start text-balance w-full">
                   Login to your Family Tree account
                 </p>
               </div>
@@ -119,6 +121,7 @@ export function LoginForm({
                   variant="outline"
                   type="button"
                   className="w-full cursor-pointer"
+                  onClick={loginWithGoogle}
                 >
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
                     <path
